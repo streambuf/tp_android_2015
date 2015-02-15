@@ -1,19 +1,35 @@
 package com.tech_mail.tp_android_2015;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.ListActivity;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
-public class HistoryActivity extends ActionBarActivity {
+public class HistoryActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+                "Linux", "OS/2" };
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, values);
+        setListAdapter(adapter);
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        String item = (String) getListAdapter().getItem(position);
+        Toast.makeText(this, item + " выбран", Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
