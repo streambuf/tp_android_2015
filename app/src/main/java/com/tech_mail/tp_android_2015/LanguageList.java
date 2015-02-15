@@ -1,6 +1,7 @@
 package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,48 +9,29 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
+import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
 
 public class LanguageList extends ActionBarActivity {
 
+    private DatabaseHelper dbHelper;
 
     // TODO
     private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
+
     private final String API_ARRAY_NAME = "dirs";
     private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
-    private String streamToString(InputStream is) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader r = new BufferedReader(new InputStreamReader(is),1000);
-        for (String line = r.readLine(); line != null; line =r.readLine()){
-            sb.append(line);
-        }
-        is.close();
-        return sb.toString();
-    }
 
     private List<String> getListFromJSON (JSONArray jArray) throws JSONException {
         List <String> languageList = new ArrayList<>();
@@ -59,6 +41,7 @@ public class LanguageList extends ActionBarActivity {
         }
         return languageList;
     }
+
 
     private void parseLanguageList (List<String> languages) {
         String curLang = "";
@@ -78,12 +61,10 @@ public class LanguageList extends ActionBarActivity {
         languageMap.remove("");
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
-
 
         String default_langs = "";
         new DownloadLanguageList(default_langs)
@@ -101,19 +82,20 @@ public class LanguageList extends ActionBarActivity {
         }
 
         protected String doInBackground(String... urls) {
-            String urldisplay = urls[0];
             String downloads = null;
             try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
+                InputStream in = new java.net.URL(urls[0]).openStream();
                 JSONObject json = new JSONObject(streamToString(in));
                 parseLanguageList(getListFromJSON(json.getJSONArray(API_ARRAY_NAME)));
 
                 downloads = languageMap.keySet().toString();
+
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             return downloads;
+
         }
 
         protected void onPostExecute(String result) {

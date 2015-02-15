@@ -1,6 +1,7 @@
 package com.tech_mail.tp_android_2015;
 
 import android.app.ListActivity;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.os.Bundle;
@@ -12,10 +13,14 @@ import android.widget.Toast;
 
 public class HistoryActivity extends ListActivity {
 
+    private DatabaseHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        dbHelper = new DatabaseHelper(this, null);
 
         String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
                 "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
