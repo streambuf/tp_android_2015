@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 public class MainActivity extends ActionBarActivity {
 
     private String URL = "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +32,21 @@ public class MainActivity extends ActionBarActivity {
 
         Button buttonTranslate = (Button) findViewById(R.id.translate);
         final EditText editText = (EditText) findViewById(R.id.editText);
+
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String fromLang = ((Button) findViewById(R.id.from_lang)).getText().toString();
                 String toLang = ((Button) findViewById(R.id.to_lang)).getText().toString();
+
                 String text = editText.getText().toString();
                 try {
                     text = URLEncoder.encode(text, "UTF-8");
-                } catch (Exception e) {}
-                URL = URL + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
-                new TranslatedTextGetter().execute(URL);
+                }
+                catch (Exception e) {
+                    Log.e("MainActivity", e.toString());
+                }
+                new TranslatedTextGetter(fromLang, toLang, text).execute();
             }
         });
     }
@@ -56,25 +61,36 @@ public class MainActivity extends ActionBarActivity {
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
 
         private final TextView textView = (TextView)  findViewById(R.id.textView);
+        private String fromLang;
+        private String toLang;
+        private String text;
 
-        public TranslatedTextGetter() {
+        public TranslatedTextGetter(String fromLang, String toLang, String text) {
+            this.fromLang = fromLang;
+            this.toLang = toLang;
+            this.text = text;
         }
 
-        protected String doInBackground(String... urls) {
+        @Override
+        protected String doInBackground(String ... params) {
+            String requestURL = URL + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
+
             String translatedText = null;
             try {
-                JSONObject json = HttpResponseGetter.getResponseByUrl(urls[0]);
+                JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
                 translatedText = (String) json.getString("text");
                 // убираем скобки и кавычки
                 translatedText = translatedText.substring(2, translatedText.length() - 2);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("MainActivity", e.toString());
             }
             return translatedText;
 
         }
 
+        @Override
         protected void onPostExecute(String result) {
+            dbHelper.insert(fromLang, text, toLang, result);
             textView.setText(result);
         }
     }
