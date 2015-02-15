@@ -60,18 +60,45 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        final Button buttonFromLang = (Button) findViewById(R.id.from_lang);
+        final Button buttonToLang = (Button) findViewById(R.id.to_lang);
+
+        buttonFromLang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LanguageList.class);
+                intent.putExtra("to_lang", buttonToLang.getText().toString());
+                intent.putExtra("from_lang", buttonFromLang.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+         buttonToLang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LanguageList.class);
+                intent.putExtra("to_lang", buttonToLang.getText().toString());
+                intent.putExtra("from_lang", buttonFromLang.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+        Button buttonSwitchLang = (Button) findViewById(R.id.switch_lang);
+        buttonSwitchLang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fromLang = buttonFromLang.getText().toString();
+                buttonFromLang.setText(buttonToLang.getText().toString());
+                buttonToLang.setText(fromLang);
+            }
+        });
+
     }
 
     private void setTextView(String text) {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setText(text);
-    }
-
-    // View - элемент, на котором сработало событие
-    public void switchLang(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, LanguageList.class);
-        startActivity(intent);
     }
 
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
