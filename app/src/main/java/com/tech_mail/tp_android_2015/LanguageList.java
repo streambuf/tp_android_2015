@@ -1,8 +1,10 @@
 package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -47,59 +49,45 @@ public class LanguageList extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
-//        Intent intent = getIntent();
-        final TextView languageList = (TextView)  findViewById(R.id.lang_list);
 
-        DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-        HttpGet request = new HttpGet(URL);
 
-        InputStream inputStream = null;
-        String languages = "Test";
-
-        try {
-            HttpResponse response = httpclient.execute(request);
-            HttpEntity entity = response.getEntity();
-            inputStream = entity.getContent();
-            languages = streamToString(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
-        }
+        String default_langs = "";
+        new DownloadLanguageList(default_langs)
+                .execute(URL);
 
 //        try {
 //            JSONObject jObject = new JSONObject(languages);
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
+    }
 
-        languageList.setText(languages);
+    private class DownloadLanguageList extends AsyncTask<String, Void, String> {
 
+        private String languages;
+        private final TextView languageList = (TextView)  findViewById(R.id.lang_list);
 
-//        URL url = null;
-//        try {
-////            url = new URL("https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d");
-//            url = new URL("http://www.google.com");
-//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//
-//            try {
-//                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-//                String languages = readStream(in);
-//                languageList.setText(languages);
-//            }
-//            finally {
-//                urlConnection.disconnect();
-//            }
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        public DownloadLanguageList(String languages) {
+            this.languages = languages;
+            languageList.setText(languages);
+        }
 
+        protected String doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            String downloads = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                downloads = streamToString(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return downloads;
+        }
 
-
-//        setContentView(languageList);
+        protected void onPostExecute(String result) {
+            languageList.setText(result);
+        }
     }
 
 
