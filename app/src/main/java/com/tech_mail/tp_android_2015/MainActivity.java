@@ -1,9 +1,11 @@
 package com.tech_mail.tp_android_2015;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +14,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    // View - элемент, на котором сработало событие
+    public void switchLang(View view) {
+        // Do something in response to button
+        Intent intent = new Intent(this, LanguageList.class);
+        startActivity(intent);
     }
 
 

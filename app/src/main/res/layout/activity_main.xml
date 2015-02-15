@@ -16,21 +16,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/withLang"
-            android:id="@+id/withLang"
+            android:id="@+id/from_lang"
             android:layout_weight="4" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/switchLang"
-            android:id="@+id/switchLang"
-            android:layout_weight="1" />
+            android:id="@+id/switch_lang"
+            android:layout_weight="1"
+            android:onClick="@string/switchLang" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/toLang"
-            android:id="@+id/toLang"
+            android:id="@+id/to_lang"
             android:layout_weight="4" />
     </LinearLayout>
 

@@ -1,10 +1,20 @@
 package com.tech_mail.tp_android_2015;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -18,9 +28,11 @@ import java.net.URL;
 
 public class LanguageList extends ActionBarActivity {
 
-    final TextView languageList = (TextView)  findViewById(R.id.language_list);
 
-    private String readStream(InputStream is) throws IOException {
+    // TODO
+    private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
+
+    private String streamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader r = new BufferedReader(new InputStreamReader(is),1000);
         for (String line = r.readLine(); line != null; line =r.readLine()){
@@ -35,26 +47,59 @@ public class LanguageList extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
+//        Intent intent = getIntent();
+        final TextView languageList = (TextView)  findViewById(R.id.lang_list);
 
+        DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+        HttpGet request = new HttpGet(URL);
 
-        URL url = null;
+        InputStream inputStream = null;
+        String languages = null;
+
         try {
-            url = new URL("https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d/");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-            try {
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                String languages = readStream(in);
-                languageList.setText(languages);
-            }
-            finally {
-                urlConnection.disconnect();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            HttpResponse response = httpclient.execute(request);
+            HttpEntity entity = response.getEntity();
+            inputStream = entity.getContent();
+            languages = streamToString(inputStream);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
+        }
+
+        try {
+            JSONObject jObject = new JSONObject(languages);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        languageList.setText(languages);
+
+
+//        URL url = null;
+//        try {
+////            url = new URL("https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d");
+//            url = new URL("http://www.google.com");
+//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//
+//            try {
+//                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+//                String languages = readStream(in);
+//                languageList.setText(languages);
+//            }
+//            finally {
+//                urlConnection.disconnect();
+//            }
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+
+        setContentView(languageList);
     }
 
 
