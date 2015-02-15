@@ -6,9 +6,9 @@
     <string name="title_activity_history">HistoryActivity</string>
     <string name="to_history">History</string>
 
-    <string name="withLang">withLang</string>
+    <string name="withLang">Eng</string>
     <string name="switchLang">switchLang</string>
-    <string name="toLang">toLang</string>
+    <string name="toLang">Ru</string>
     <string name="translate">Translate</string>
 
     <string name="title_activity_language_list">LanguageList</string>

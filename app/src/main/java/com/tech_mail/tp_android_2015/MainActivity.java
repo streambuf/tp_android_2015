@@ -1,6 +1,7 @@
 package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,17 +10,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
+import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 
-import java.io.InputStream;
+import org.json.JSONObject;
+
+
+import java.net.URLEncoder;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d&text=cat&lang=en-ru";
+    private String URL = "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +34,14 @@ public class MainActivity extends ActionBarActivity {
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("EditText", editText.getText().toString());
-                DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-                HttpGet request = new HttpGet(URL);
-
-                InputStream inputStream = null;
-                String translatedText = null;
+                String fromLang = ((Button) findViewById(R.id.from_lang)).getText().toString();
+                String toLang = ((Button) findViewById(R.id.to_lang)).getText().toString();
+                String text = editText.getText().toString();
+                try {
+                    text = URLEncoder.encode(text, "UTF-8");
+                } catch (Exception e) {}
+                URL = URL + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
+                new TranslatedTextGetter().execute(URL);
             }
         });
     }
@@ -46,6 +51,32 @@ public class MainActivity extends ActionBarActivity {
         // Do something in response to button
         Intent intent = new Intent(this, LanguageList.class);
         startActivity(intent);
+    }
+
+    private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
+
+        private final TextView textView = (TextView)  findViewById(R.id.textView);
+
+        public TranslatedTextGetter() {
+        }
+
+        protected String doInBackground(String... urls) {
+            String translatedText = null;
+            try {
+                JSONObject json = HttpResponseGetter.getResponseByUrl(urls[0]);
+                translatedText = (String) json.getString("text");
+                // убираем скобки и кавычки
+                translatedText = translatedText.substring(2, translatedText.length() - 2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return translatedText;
+
+        }
+
+        protected void onPostExecute(String result) {
+            textView.setText(result);
+        }
     }
 
 
