@@ -1,6 +1,7 @@
 package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import java.net.URL;
 
 public class LanguageList extends ActionBarActivity {
 
+    private DatabaseHelper dbHelper;
 
     // TODO
     private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
@@ -50,6 +52,7 @@ public class LanguageList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
 
+        dbHelper = new DatabaseHelper(this, null);
 
         String default_langs = "";
         new DownloadLanguageList(default_langs)
