@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +27,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class LanguageList extends ActionBarActivity {
@@ -33,7 +36,7 @@ public class LanguageList extends ActionBarActivity {
 
     // TODO
     private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
-
+    private final String API_ARRAY_NAME = "dirs";
     private String streamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader r = new BufferedReader(new InputStreamReader(is),1000);
@@ -42,6 +45,15 @@ public class LanguageList extends ActionBarActivity {
         }
         is.close();
         return sb.toString();
+    }
+
+    private List getListFromJSON (JSONArray jArray) throws JSONException {
+        List <String> languageList = new ArrayList<>();
+        for (int i=0; i < jArray.length(); i++)
+        {
+            languageList.add(jArray.getString(i));
+        }
+        return languageList;
     }
 
 
@@ -54,12 +66,6 @@ public class LanguageList extends ActionBarActivity {
         String default_langs = "";
         new DownloadLanguageList(default_langs)
                 .execute(URL);
-
-//        try {
-//            JSONObject jObject = new JSONObject(languages);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
@@ -77,7 +83,8 @@ public class LanguageList extends ActionBarActivity {
             String downloads = null;
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
-                downloads = streamToString(in);
+                JSONObject json = new JSONObject(streamToString(in));
+                downloads = getListFromJSON(json.getJSONArray(API_ARRAY_NAME)).toString();
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
