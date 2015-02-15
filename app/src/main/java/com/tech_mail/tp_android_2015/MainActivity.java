@@ -16,6 +16,13 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
+    // View - элемент, на котором сработало событие
+    public void switchLang(View view) {
+        // Do something in response to button
+        Intent intent = new Intent(this, LanguageList.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
