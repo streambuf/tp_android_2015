@@ -103,14 +103,12 @@ public class MainActivity extends ActionBarActivity {
                 }
             } catch (Exception e) {
                 Log.e("MainActivity", e.toString());
-                setTextView("Can't be translated");
             }
             return translatedText;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
             if (result != null) {
                 dbHelper.insert(fromLang, text, toLang, result);
                 setTextView(result);
