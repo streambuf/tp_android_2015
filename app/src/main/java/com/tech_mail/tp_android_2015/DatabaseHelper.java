@@ -42,12 +42,12 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private static final String DATABASE_CREATE_SCRIPT = "CREATE TABLE "
             + TRANS_TABLE_NAME + " ("
-            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTO_INCREMENT, "
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + REQUEST_LANG + " VARCHAR(100) NOT NULL, "
             + REQUEST + " VARCHAR(100) NOT NULL, "
             + TRANS_LANG + " VARCHAR(100) NOT NULL, "
             + TRANS + " VARCHAR(100) NOT NULL, "
-            + TIMESTAMP + "DATETIME DEFAULT NOW()"
+            + TIMESTAMP + "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
             + ");";
 
     @Override
