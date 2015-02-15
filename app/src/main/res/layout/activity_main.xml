@@ -69,6 +69,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/to_history"
-            android:onClick="toHistory" />
+            android:id="@+id/to_history"/>
     </LinearLayout>
 </LinearLayout>

@@ -19,10 +19,8 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 
-
 public class MainActivity extends ActionBarActivity {
 
-    private String URL = "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
     private DatabaseHelper dbHelper;
 
     @Override
@@ -44,13 +42,29 @@ public class MainActivity extends ActionBarActivity {
                 String text = editText.getText().toString();
                 try {
                     text = URLEncoder.encode(text, "UTF-8");
+                    new TranslatedTextGetter(fromLang, toLang, text).execute();
                 }
                 catch (Exception e) {
+                    setTextView("Can't be translated");
                     Log.e("MainActivity", e.toString());
                 }
-                new TranslatedTextGetter(fromLang, toLang, text).execute();
+
             }
         });
+
+        Button buttonToHistory = (Button) findViewById(R.id.to_history);
+        buttonToHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void setTextView(String text) {
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText(text);
     }
 
     // View - элемент, на котором сработало событие
@@ -62,7 +76,6 @@ public class MainActivity extends ActionBarActivity {
 
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
 
-        private final TextView textView = (TextView)  findViewById(R.id.textView);
         private String fromLang;
         private String toLang;
         private String text;
@@ -75,28 +88,32 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String ... params) {
-            String requestURL = URL + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
-
+            String urlTranslate = getResources().getString(R.string.url_translate);
+            String requestURL = urlTranslate + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
             String translatedText = null;
             try {
                 JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
-                translatedText = (String) json.getString("text");
-                // убираем скобки и кавычки
-                translatedText = translatedText.substring(2, translatedText.length() - 2);
+                Integer status = (Integer) json.getInt("code");
+                if (status != 200) {
+                    setTextView("Can't be translated: " + json.toString());
+                } else {
+                    translatedText = (String) json.getString("text");
+                    // убираем скобки и кавычки
+                    translatedText = translatedText.substring(2, translatedText.length() - 2);
+                }
             } catch (Exception e) {
                 Log.e("MainActivity", e.toString());
+                setTextView("Can't be translated");
             }
             return translatedText;
-
         }
 
         @Override
         protected void onPostExecute(String result) {
             dbHelper.insert(fromLang, text, toLang, result);
-            textView.setText(result);
+            setTextView(result);
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,8 +137,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toHistory(View view) {
-        Intent intent = new Intent(this, HistoryActivity.class);
-        startActivity(intent);
-    }
 }
