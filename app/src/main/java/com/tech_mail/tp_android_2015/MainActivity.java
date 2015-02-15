@@ -44,8 +44,7 @@ public class MainActivity extends ActionBarActivity {
                 String text = editText.getText().toString();
                 try {
                     text = URLEncoder.encode(text, "UTF-8");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Log.e("MainActivity", e.toString());
                 }
                 new TranslatedTextGetter(fromLang, toLang, text).execute();
@@ -92,8 +91,13 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            dbHelper.insert(fromLang, text, toLang, result);
-            textView.setText(result);
+            if (result != null) {
+                dbHelper.insert(fromLang, text, toLang, result);
+                textView.setText(result);
+            }
+            else {
+                Log.e("MainActivity", "Response is null");
+            }
         }
     }
 
