@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -70,17 +71,33 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         map.put(REQUEST, request);
         map.put(TRANS_LANG, transLang);
         map.put(TRANS, trans);
-        getWritableDatabase().insert(TRANS_TABLE_NAME, null, map);
+
+        try {
+            getWritableDatabase().insert(TRANS_TABLE_NAME, null, map);
+        }
+        catch (SQLiteException e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     public void delete(String request) {
         String [] whereArgs = new String [] {request};
-        getWritableDatabase().delete(TRANS_TABLE_NAME, REQUEST + "=?", whereArgs);
+        try {
+            getWritableDatabase().delete(TRANS_TABLE_NAME, REQUEST + "=?", whereArgs);
+        }
+        catch (SQLiteException e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     public boolean deleteAll() {
         int doneDelete = 0;
-        doneDelete = getWritableDatabase().delete(TRANS_TABLE_NAME, null, null);
+        try {
+            doneDelete = getWritableDatabase().delete(TRANS_TABLE_NAME, null, null);
+        }
+        catch (SQLiteException e) {
+            Log.e(TAG, e.toString());
+        }
         Log.w(TAG, Integer.toString(doneDelete));
         return doneDelete > 0;
     }

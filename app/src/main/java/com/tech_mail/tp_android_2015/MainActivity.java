@@ -30,6 +30,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dbHelper = new DatabaseHelper(this, null);
+
         Button buttonTranslate = (Button) findViewById(R.id.translate);
         final EditText editText = (EditText) findViewById(R.id.editText);
 
