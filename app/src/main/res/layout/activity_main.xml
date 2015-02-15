@@ -42,34 +42,27 @@
                 android:layout_weight="4" />
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:id="@+id/editText"
+            android:height="150dp"
+            android:singleLine="false"
+            android:background="#ffffff"
+            android:autoText="true" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/editText"
-                android:height="150dp"
-                android:singleLine="false"
-                android:background="#ffffff"
-                android:autoText="true" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:text="@string/translate"
+            android:id="@+id/translate" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/translate"
-                android:id="@+id/translate" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:height="150dp"
+            android:background="#ffffffff" />
 
         <Button
             android:layout_width="100dp"
