@@ -110,8 +110,15 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            dbHelper.insert(fromLang, text, toLang, result);
-            setTextView(result);
+
+            if (result != null) {
+                dbHelper.insert(fromLang, text, toLang, result);
+                setTextView(result);
+            }
+            else {
+                Log.e("MainActivity", "Response is null");
+                setTextView("Can't be translated");
+            }
         }
     }
 
