@@ -28,7 +28,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class LanguageList extends ActionBarActivity {
@@ -37,6 +40,7 @@ public class LanguageList extends ActionBarActivity {
     // TODO
     private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
     private final String API_ARRAY_NAME = "dirs";
+    private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
     private String streamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader r = new BufferedReader(new InputStreamReader(is),1000);
@@ -47,13 +51,31 @@ public class LanguageList extends ActionBarActivity {
         return sb.toString();
     }
 
-    private List getListFromJSON (JSONArray jArray) throws JSONException {
+    private List<String> getListFromJSON (JSONArray jArray) throws JSONException {
         List <String> languageList = new ArrayList<>();
         for (int i=0; i < jArray.length(); i++)
         {
             languageList.add(jArray.getString(i));
         }
         return languageList;
+    }
+
+    private void parseLanguageList (List<String> languages) {
+        String curLang = "";
+        ArrayList<String> curLangTo = new ArrayList<>();
+        for (String pair : languages) {
+            String[] array = pair.split("-");
+            if (languageMap.containsKey(array[0])) {
+                curLangTo.add(array[1]);
+            }
+            else {
+                languageMap.put(curLang, curLangTo);
+                curLangTo.clear();
+                curLang = array[0];
+                curLangTo.add(array[1]);
+            }
+        }
+        languageMap.remove("");
     }
 
 
@@ -84,7 +106,9 @@ public class LanguageList extends ActionBarActivity {
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 JSONObject json = new JSONObject(streamToString(in));
-                downloads = getListFromJSON(json.getJSONArray(API_ARRAY_NAME)).toString();
+                parseLanguageList(getListFromJSON(json.getJSONArray(API_ARRAY_NAME)));
+
+                downloads = languageMap.keySet().toString();
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
