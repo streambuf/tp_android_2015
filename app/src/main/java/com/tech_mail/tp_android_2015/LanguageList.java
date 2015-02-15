@@ -54,7 +54,7 @@ public class LanguageList extends ActionBarActivity {
         HttpGet request = new HttpGet(URL);
 
         InputStream inputStream = null;
-        String languages = null;
+        String languages = "Test";
 
         try {
             HttpResponse response = httpclient.execute(request);
@@ -68,11 +68,11 @@ public class LanguageList extends ActionBarActivity {
             try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
         }
 
-        try {
-            JSONObject jObject = new JSONObject(languages);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            JSONObject jObject = new JSONObject(languages);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
         languageList.setText(languages);
 
@@ -99,7 +99,7 @@ public class LanguageList extends ActionBarActivity {
 
 
 
-        setContentView(languageList);
+//        setContentView(languageList);
     }
 
 
