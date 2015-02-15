@@ -17,16 +17,16 @@ import java.sql.SQLException;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
-    private static final String DATABASE_NAME = "app.db";
+    public static final String DATABASE_NAME = "app.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TAG = "DatabaseHelper";
 
-    private static final String TRANS_TABLE_NAME = "translations";
-    private static final String REQUEST_LANG = "request_lang";
-    private static final String REQUEST = "request";
-    private static final String TRANS_LANG = "trans_lang";
-    private static final String TRANS = "trans";
-    private static final String TIMESTAMP = "time";
+    public static final String TRANS_TABLE_NAME = "translations";
+    public static final String REQUEST_LANG = "request_lang";
+    public static final String REQUEST = "request";
+    public static final String TRANS_LANG = "trans_lang";
+    public static final String TRANS = "trans";
+    public static final String TIMESTAMP = "time";
 
     public DatabaseHelper(Context context, CursorFactory factory) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);

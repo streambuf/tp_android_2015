@@ -1,19 +1,21 @@
 package com.tech_mail.tp_android_2015;
 
 import android.app.ListActivity;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 
 public class HistoryActivity extends ListActivity {
 
     private DatabaseHelper dbHelper;
+    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,12 +23,23 @@ public class HistoryActivity extends ListActivity {
         setContentView(R.layout.activity_history);
 
         dbHelper = new DatabaseHelper(this, null);
+        displayListView();
+    }
 
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
+    private void displayListView() {
+        Cursor cursor = dbHelper.fetchAll();
+
+        String[] columns = new String[] {
+                dbHelper.REQUEST,
+                dbHelper.TRANS,
+        };
+
+        int[] views = new int[] {
+                R.id.request,
+                R.id.trans,
+        };
+
+        adapter = new SimpleCursorAdapter(this, R.layout.history_item, cursor, columns, views, 0);
         setListAdapter(adapter);
     }
 
@@ -40,7 +53,7 @@ public class HistoryActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_history, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
