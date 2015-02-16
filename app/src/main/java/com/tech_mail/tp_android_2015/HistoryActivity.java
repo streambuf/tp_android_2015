@@ -1,18 +1,18 @@
 package com.tech_mail.tp_android_2015;
 
-import android.app.ListActivity;
 import android.database.Cursor;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 
-public class HistoryActivity extends ListActivity {
+public class HistoryActivity extends ActionBarActivity {
 
     private DatabaseHelper dbHelper;
     private SimpleCursorAdapter adapter;
@@ -30,8 +30,8 @@ public class HistoryActivity extends ListActivity {
         Cursor cursor = dbHelper.fetchAll();
 
         String[] columns = new String[] {
-                dbHelper.REQUEST,
-                dbHelper.TRANS,
+                DatabaseHelper.REQUEST,
+                DatabaseHelper.TRANS,
         };
 
         int[] views = new int[] {
@@ -40,13 +40,18 @@ public class HistoryActivity extends ListActivity {
         };
 
         adapter = new SimpleCursorAdapter(this, R.layout.history_item, cursor, columns, views, 0);
-        setListAdapter(adapter);
-    }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        String item = (String) getListAdapter().getItem(position);
-        Toast.makeText(this, item + " выбран", Toast.LENGTH_LONG).show();
+        ListView listView = (ListView) findViewById(R.id.history_list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+                String trans = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.TRANS));
+                Toast.makeText(getApplicationContext(), trans, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

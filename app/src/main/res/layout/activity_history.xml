@@ -9,7 +9,7 @@
     tools:context="com.tech_mail.tp_android_2015.HistoryActivity">
 
     <ListView
-        android:id="@android:id/android:list"
+        android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
