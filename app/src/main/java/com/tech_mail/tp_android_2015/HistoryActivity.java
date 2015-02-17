@@ -72,6 +72,10 @@ public class HistoryActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        else if (id == R.id.action_clear) {
+            dbHelper.deleteAll();
+            displayListView();
+        }
 
         return super.onOptionsItemSelected(item);
     }

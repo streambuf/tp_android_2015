@@ -137,7 +137,9 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
-                dbHelper.insert(fromLang, text, toLang, result);
+                if (! text.equals("") &&  ! result.equals("")) {
+                    dbHelper.insert(fromLang, text, toLang, result);
+                }
                 setTextView(result);
             }
             else {
