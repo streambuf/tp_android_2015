@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     public static final String DATABASE_NAME = "app.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     private static final String TAG = "DatabaseHelper";
 
     public static final String TRANS_TABLE_NAME = "translations";
@@ -44,10 +44,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     private static final String DATABASE_CREATE_SCRIPT = "CREATE TABLE "
             + TRANS_TABLE_NAME + " ("
             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + REQUEST_LANG + " VARCHAR(100) NOT NULL, "
-            + REQUEST + " VARCHAR(100) NOT NULL, "
-            + TRANS_LANG + " VARCHAR(100) NOT NULL, "
-            + TRANS + " VARCHAR(100) NOT NULL, "
+            + REQUEST_LANG + " TEXT NOT NULL, "
+            + REQUEST + " TEXT NOT NULL, "
+            + TRANS_LANG + " TEXT NOT NULL, "
+            + TRANS + " TEXT NOT NULL, "
             + TIMESTAMP + "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
             + ");";
 
