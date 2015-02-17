@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import org.json.JSONArray;
@@ -26,13 +27,15 @@ import java.util.TreeMap;
 
 import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
 
-public class LanguageList extends ListActivity {
+public class LanguageList extends ActionBarActivity {
 
     // TODO
-    private final String API_KEY = "trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
-    private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=";
+    private String API_KEY = "";
+    private String URL = "";
 
     private final String API_ARRAY_NAME = "dirs";
+
+    private final Map <String, String> langTransaltor = new HashMap<>();
     private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
 
     private List<String> getListFromJSON (JSONArray jArray) throws JSONException {
@@ -65,22 +68,71 @@ public class LanguageList extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        API_KEY = getResources().getString(R.string.API_KEY);
+        URL = getResources().getString(R.string.url_lang_list);
+
+//        TODO
+        langTransaltor.put("sq", "Albanian");
+        langTransaltor.put("en", "English");
+        langTransaltor.put("ar", "Arabic");
+        langTransaltor.put("hy", "Armenian");
+        langTransaltor.put("az", "Azerbaijan");
+        langTransaltor.put("be", "Belarusian");
+        langTransaltor.put("bg", "Bulgarian");
+        langTransaltor.put("bs", "Bosnian");
+        langTransaltor.put("vi", "Vietnamese");
+        langTransaltor.put("hu", "Hungarian");
+        langTransaltor.put("nl", "Dutch");
+        langTransaltor.put("el", "Greek");
+        langTransaltor.put("en", "English");
+        langTransaltor.put("ka", "Georgian");
+        langTransaltor.put("da", "Danish");
+        langTransaltor.put("he", "Hebrew");
+        langTransaltor.put("id", "Indonesian");
+        langTransaltor.put("it", "Italian");
+        langTransaltor.put("is", "Icelandic");
+        langTransaltor.put("es", "Spanish");
+        langTransaltor.put("ca", "Catalan");
+        langTransaltor.put("zh", "Chinese");
+        langTransaltor.put("lv", "Latvian");
+        langTransaltor.put("lt", "Lithuanian");
+        langTransaltor.put("ms", "Malay");
+        langTransaltor.put("mt", "Maltese");
+        langTransaltor.put("mc", "Macedonian");
+        langTransaltor.put("de", "German");
+        langTransaltor.put("no", "Norwegian");
+        langTransaltor.put("po", "Polish");
+        langTransaltor.put("pt", "Portuguese");
+        langTransaltor.put("ro", "Romanian");
+        langTransaltor.put("ru", "Russian");
+        langTransaltor.put("sr", "Serbian");
+        langTransaltor.put("sk", "Slovak");
+        langTransaltor.put("sl", "Slovenian");
+        langTransaltor.put("th", "Thai");
+        langTransaltor.put("tr", "Turkish");
+        langTransaltor.put("uk", "Ukrainian");
+        langTransaltor.put("fi", "Finnish");
+        langTransaltor.put("fr", "French");
+        langTransaltor.put("hr", "Croatian");
+        langTransaltor.put("cs", "Czech");
+        langTransaltor.put("sv", "Swedish");
+        langTransaltor.put("et", "Estonian");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
 
         String default_langs = "";
         new DownloadLanguageList(default_langs)
-                .execute(URL+API_KEY);
+                .execute(URL + API_KEY);
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
 
         private String languages;
-        private final TextView languageList = (TextView)  findViewById(R.id.lang_list);
 
         public DownloadLanguageList(String languages) {
             this.languages = languages;
-            languageList.setText(languages);
         }
 
         protected String doInBackground(String... urls) {
@@ -98,10 +150,14 @@ public class LanguageList extends ListActivity {
 
         }
         protected void onPostExecute(String result) {
-            languageList.setText(result);
             Set<String> set = languageMap.keySet();
             String[] array = new String[set.size()];
             set.toArray(array);
+
+//            for (int i = 0; i < array.length; i++) {
+//                array[i] = langTransaltor.get(array[i]);
+//            }
+
             applyAdapter(array);
         }
     }
@@ -109,7 +165,8 @@ public class LanguageList extends ListActivity {
     public void applyAdapter (String[] array) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, array);
-        setListAdapter(adapter);
+        ListView listView = (ListView) findViewById(R.id.lang_list);
+        listView.setAdapter(adapter);
     }
 
 
