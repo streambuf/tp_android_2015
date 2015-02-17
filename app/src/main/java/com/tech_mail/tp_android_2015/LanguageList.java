@@ -1,5 +1,6 @@
 package com.tech_mail.tp_android_2015;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import org.json.JSONArray;
@@ -19,16 +21,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
 
-public class LanguageList extends ActionBarActivity {
-
-    private DatabaseHelper dbHelper;
+public class LanguageList extends ListActivity {
 
     // TODO
-    private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
+    private final String API_KEY = "trnsl.1.1.20150213T145944Z.ca111d9a559d26b2.d078d31f6d32d5c17e70ba9ffeca68ea26b0269d";
+    private final String URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=";
 
     private final String API_ARRAY_NAME = "dirs";
     private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
@@ -68,7 +70,7 @@ public class LanguageList extends ActionBarActivity {
 
         String default_langs = "";
         new DownloadLanguageList(default_langs)
-                .execute(URL);
+                .execute(URL+API_KEY);
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
@@ -87,9 +89,7 @@ public class LanguageList extends ActionBarActivity {
                 InputStream in = new java.net.URL(urls[0]).openStream();
                 JSONObject json = new JSONObject(streamToString(in));
                 parseLanguageList(getListFromJSON(json.getJSONArray(API_ARRAY_NAME)));
-
                 downloads = languageMap.keySet().toString();
-
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -97,10 +97,19 @@ public class LanguageList extends ActionBarActivity {
             return downloads;
 
         }
-
         protected void onPostExecute(String result) {
             languageList.setText(result);
+            Set<String> set = languageMap.keySet();
+            String[] array = new String[set.size()];
+            set.toArray(array);
+            applyAdapter(array);
         }
+    }
+
+    public void applyAdapter (String[] array) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, array);
+        setListAdapter(adapter);
     }
 
 
