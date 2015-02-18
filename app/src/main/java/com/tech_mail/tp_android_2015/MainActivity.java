@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 
@@ -40,15 +41,17 @@ public class MainActivity extends ActionBarActivity {
                 String toLang = ((Button) findViewById(R.id.to_lang)).getText().toString();
 
                 String text = editText.getText().toString();
+                if (text.length() == 0) {
+                    ShowMessage("Field must not be empty");
+                }
                 try {
                     text = URLEncoder.encode(text, "UTF-8");
                     new TranslatedTextGetter(fromLang, toLang, text).execute();
                 }
                 catch (Exception e) {
-                    setTextView("Can't be translated");
+                    ShowMessage("Can't be translated");
                     Log.e("MainActivity", e.toString());
                 }
-
             }
         });
 
@@ -96,11 +99,6 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    private void setTextView(String text) {
-        TextView textView = (TextView) findViewById(R.id.textView);
-        textView.setText(text);
-    }
-
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
 
         private String fromLang;
@@ -122,7 +120,7 @@ public class MainActivity extends ActionBarActivity {
                 JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
                 Integer status = (Integer) json.getInt("code");
                 if (status != 200) {
-                    setTextView("Can't be translated: " + json.toString());
+                    ShowMessage("Can't be translated: ");
                 } else {
                     translatedText = (String) json.getString("text");
                     // убираем скобки и кавычки
@@ -144,9 +142,18 @@ public class MainActivity extends ActionBarActivity {
             }
             else {
                 Log.e("MainActivity", "Response is null");
-                setTextView("Can't be translated");
+                ShowMessage("Can't be translated");
             }
         }
+    }
+
+    private void setTextView(String text) {
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText(text);
+    }
+
+    private void ShowMessage(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
