@@ -2,6 +2,7 @@ package com.tech_mail.tp_android_2015;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -9,9 +10,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,9 +133,7 @@ public class LanguageList extends ActionBarActivity {
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
-
         private String languages;
-
         public DownloadLanguageList(String languages) {
             this.languages = languages;
         }
@@ -165,8 +168,16 @@ public class LanguageList extends ActionBarActivity {
     public void applyAdapter (String[] array) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, array);
-        ListView listView = (ListView) findViewById(R.id.lang_list);
-        listView.setAdapter(adapter);
+        ListView lang_list = (ListView) findViewById(R.id.lang_list);
+        lang_list.setAdapter(adapter);
+
+        lang_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+                String selectedFromList = (listView.getItemAtPosition(position).toString());
+                Toast.makeText(getApplicationContext(), selectedFromList, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
