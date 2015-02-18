@@ -22,7 +22,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/withLang"
+                android:text="@string/fromLang"
                 android:id="@+id/from_lang"
                 android:layout_weight="4" />
 

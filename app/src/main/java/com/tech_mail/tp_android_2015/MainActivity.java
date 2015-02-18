@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,21 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         dbHelper = new DatabaseHelper(this, null);
+
+        Button buttonFrom = (Button) findViewById(R.id.from_lang);
+        Button buttonTo = (Button) findViewById(R.id.to_lang);
+
+        Intent intent = getIntent();
+        String action = intent.getStringExtra("action");
+        String fromLang = intent.getStringExtra("from_lang");
+        String toLang = intent.getStringExtra("to_lang");
+
+        if (action != null) {
+            if (action.equals("lang_changed")) {
+                buttonFrom.setText(fromLang);
+                buttonTo.setText(toLang);
+            }
+        }
 
         Button buttonTranslate = (Button) findViewById(R.id.translate);
         final EditText editText = (EditText) findViewById(R.id.editText);
@@ -73,6 +89,7 @@ public class MainActivity extends ActionBarActivity {
                 Intent intent = new Intent(MainActivity.this, LanguageList.class);
                 intent.putExtra("to_lang", buttonToLang.getText().toString());
                 intent.putExtra("from_lang", buttonFromLang.getText().toString());
+                intent.putExtra("action", "from_lang_change");
                 startActivity(intent);
             }
         });
@@ -83,6 +100,7 @@ public class MainActivity extends ActionBarActivity {
                 Intent intent = new Intent(MainActivity.this, LanguageList.class);
                 intent.putExtra("to_lang", buttonToLang.getText().toString());
                 intent.putExtra("from_lang", buttonFromLang.getText().toString());
+                intent.putExtra("action", "to_lang_change");
                 startActivity(intent);
             }
         });
