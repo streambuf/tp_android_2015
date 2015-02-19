@@ -61,7 +61,6 @@ public class MainActivity extends ActionBarActivity {
                     ShowMessage("Field must not be empty");
                 }
                 try {
-                    text = URLEncoder.encode(text, "UTF-8");
                     new TranslatedTextGetter(fromLang, toLang, text).execute();
                 }
                 catch (Exception e) {
@@ -132,16 +131,19 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected String doInBackground(String ... params) {
             String urlTranslate = getResources().getString(R.string.url_translate);
-            String requestURL = urlTranslate + "&lang=" + fromLang + "-" + toLang + "&text=" + text;
             String translatedText = null;
+
             try {
+                String encodedText = URLEncoder.encode(text, "UTF-8");
+                String requestURL = urlTranslate + "&lang=" + fromLang + "-" + toLang + "&text=" + encodedText;
+
                 JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
                 Integer status = (Integer) json.getInt("code");
                 if (status != 200) {
                     ShowMessage("Can't be translated: ");
-                } else {
+                }
+                else {
                     translatedText = (String) json.getString("text");
-                    // убираем скобки и кавычки
                     translatedText = translatedText.substring(2, translatedText.length() - 2);
                 }
             } catch (Exception e) {
