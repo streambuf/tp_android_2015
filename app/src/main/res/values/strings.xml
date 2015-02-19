@@ -20,6 +20,9 @@
     <string name="url_lang_list">https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=</string>
 
     <string name="api_langarray_name">dirs</string>
+    <string name="ru">Russian</string>
+    <string name="en">English</string>
+
 
 
 </resources>

@@ -20,10 +20,12 @@ import org.json.JSONObject;
 
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 public class MainActivity extends ActionBarActivity {
 
     private DatabaseHelper dbHelper;
+    private HashMap<String, Integer> langTranslator = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,10 @@ public class MainActivity extends ActionBarActivity {
         Button buttonFrom = (Button) findViewById(R.id.from_lang);
         Button buttonTo = (Button) findViewById(R.id.to_lang);
 
+
+        langTranslator.put("ru", R.string.ru);
+        langTranslator.put("en", R.string.en);
+
         Intent intent = getIntent();
         String action = intent.getStringExtra("action");
         String fromLang = intent.getStringExtra("from_lang");
@@ -42,8 +48,8 @@ public class MainActivity extends ActionBarActivity {
 
         if (action != null) {
             if (action.equals("lang_changed")) {
-                buttonFrom.setText(fromLang);
-                buttonTo.setText(toLang);
+                buttonFrom.setText(langTranslator.get(fromLang));
+                buttonTo.setText(langTranslator.get(toLang));
             }
         }
 
