@@ -32,13 +32,17 @@ public class MainActivity extends ActionBarActivity {
 
         dbHelper = new DatabaseHelper(this, null);
 
-        Button buttonFrom = (Button) findViewById(R.id.from_lang);
-        Button buttonTo = (Button) findViewById(R.id.to_lang);
+        final Button buttonFrom = (Button) findViewById(R.id.from_lang);
+        final Button buttonTo = (Button) findViewById(R.id.to_lang);
 
         Intent intent = getIntent();
         String action = intent.getStringExtra("action");
+
         String fromLang = intent.getStringExtra("from_lang");
         String toLang = intent.getStringExtra("to_lang");
+
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        final TextView textView = (TextView) findViewById(R.id.textView);
 
         if (action != null) {
             if (action.equals("lang_changed")) {
@@ -48,20 +52,18 @@ public class MainActivity extends ActionBarActivity {
         }
 
         Button buttonTranslate = (Button) findViewById(R.id.translate);
-        final EditText editText = (EditText) findViewById(R.id.editText);
-
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fromLang = ((Button) findViewById(R.id.from_lang)).getText().toString();
-                String toLang = ((Button) findViewById(R.id.to_lang)).getText().toString();
+                String requestText = editText.getText().toString();
+                String fromLang = buttonFrom.getText().toString();
+                String toLang = buttonTo.getText().toString();
 
-                String text = editText.getText().toString();
-                if (text.length() == 0) {
+                if (requestText.length() == 0) {
                     ShowMessage("Field must not be empty");
                 }
                 try {
-                    new TranslatedTextGetter(fromLang, toLang, text).execute();
+                    new TranslatedTextGetter(fromLang, toLang, requestText).execute();
                 }
                 catch (Exception e) {
                     ShowMessage("Can't be translated");
@@ -111,6 +113,14 @@ public class MainActivity extends ActionBarActivity {
                 String fromLang = buttonFromLang.getText().toString();
                 buttonFromLang.setText(buttonToLang.getText().toString());
                 buttonToLang.setText(fromLang);
+
+                String requestText = editText.getText().toString();
+                String responseText = textView.getText().toString();
+
+                if (responseText.length() != 0) {
+                    textView.setText(requestText);
+                    editText.setText(responseText);
+                }
             }
         });
 
@@ -156,7 +166,7 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(String result) {
             if (result != null) {
                 if (! text.equals("") &&  ! result.equals("")) {
-                    dbHelper.insert(fromLang, text, toLang, result);
+                    dbHelper.insert(fromLang, text.trim(), toLang, result);
                 }
                 setTextView(result);
             }
