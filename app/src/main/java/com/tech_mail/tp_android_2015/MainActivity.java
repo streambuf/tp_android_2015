@@ -2,6 +2,7 @@ package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -21,7 +22,7 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
 
     private DatabaseHelper dbHelper;
 
