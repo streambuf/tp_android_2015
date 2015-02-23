@@ -3,9 +3,7 @@ package com.tech_mail.tp_android_2015;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,24 +33,25 @@ public class MainActivity extends FragmentActivity {
 
         final Button buttonFrom = (Button) findViewById(R.id.from_lang);
         final Button buttonTo = (Button) findViewById(R.id.to_lang);
-
-        Intent intent = getIntent();
-        String action = intent.getStringExtra("action");
-
-        String fromLang = intent.getStringExtra("from_lang");
-        String toLang = intent.getStringExtra("to_lang");
+        final Button buttonSwitchLang = (Button) findViewById(R.id.switch_lang);
+        final Button buttonToHistory = (Button) findViewById(R.id.to_history);
+        final Button buttonTranslate = (Button) findViewById(R.id.translate);
 
         final EditText editText = (EditText) findViewById(R.id.editText);
         final TextView textView = (TextView) findViewById(R.id.textView);
 
+        Intent intent = getIntent();
+        String action = intent.getStringExtra("action");
+
         if (action != null) {
             if (action.equals("lang_changed")) {
+                String fromLang = intent.getStringExtra("from_lang");
+                String toLang = intent.getStringExtra("to_lang");
                 buttonFrom.setText(fromLang);
                 buttonTo.setText(toLang);
             }
         }
 
-        Button buttonTranslate = (Button) findViewById(R.id.translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +72,6 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        Button buttonToHistory = (Button) findViewById(R.id.to_history);
         buttonToHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,38 +80,37 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        final Button buttonFromLang = (Button) findViewById(R.id.from_lang);
-        final Button buttonToLang = (Button) findViewById(R.id.to_lang);
-
-        buttonFromLang.setOnClickListener(new View.OnClickListener() {
+        buttonFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LanguageList.class);
-                intent.putExtra("to_lang", buttonToLang.getText().toString());
-                intent.putExtra("from_lang", buttonFromLang.getText().toString());
-                intent.putExtra("action", "from_lang_change");
-                startActivity(intent);
+                startActivity(
+                    languageListIntent(
+                        buttonFrom.getText().toString(),
+                        buttonTo.getText().toString(),
+                        "from_lang_change"
+                ));
             }
         });
 
-         buttonToLang.setOnClickListener(new View.OnClickListener() {
+        buttonTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LanguageList.class);
-                intent.putExtra("to_lang", buttonToLang.getText().toString());
-                intent.putExtra("from_lang", buttonFromLang.getText().toString());
-                intent.putExtra("action", "to_lang_change");
-                startActivity(intent);
+                startActivity(
+                    languageListIntent(
+                        buttonTo.getText().toString(),
+                        buttonFrom.getText().toString(),
+                        "to_lang_change"
+                ));
             }
         });
 
-        Button buttonSwitchLang = (Button) findViewById(R.id.switch_lang);
+
         buttonSwitchLang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fromLang = buttonFromLang.getText().toString();
-                buttonFromLang.setText(buttonToLang.getText().toString());
-                buttonToLang.setText(fromLang);
+                String fromLang = buttonFrom.getText().toString();
+                buttonFrom.setText(buttonTo.getText().toString());
+                buttonTo.setText(fromLang);
 
                 String requestText = editText.getText().toString();
                 String responseText = textView.getText().toString();
@@ -125,6 +122,14 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
+    }
+
+    private Intent languageListIntent(String from, String to, String action) {
+        Intent intent = new Intent(MainActivity.this, LanguageList.class);
+        intent.putExtra("to_lang", to);
+        intent.putExtra("from_lang", from);
+        intent.putExtra("action", action);
+        return intent;
     }
 
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {

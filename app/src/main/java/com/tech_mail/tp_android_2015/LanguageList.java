@@ -79,15 +79,11 @@ public class LanguageList extends ActionBarActivity {
         fromLang = intent.getStringExtra("from_lang");
         toLang = intent.getStringExtra("to_lang");
 
-        new DownloadLanguageList(this)
-                .execute(URL + API_KEY);
+        new DownloadLanguageList().execute(URL + API_KEY);
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
-        private LanguageList myActivity;
-        public DownloadLanguageList(LanguageList activity) {
-            this.myActivity = activity;
-        }
+        public DownloadLanguageList() {}
 
         protected String doInBackground(String... urls) {
             try {
@@ -114,7 +110,7 @@ public class LanguageList extends ActionBarActivity {
                 set.toArray(array);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(myActivity,
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(LanguageList.this,
                     android.R.layout.simple_list_item_1, array);
             ListView langList = (ListView) findViewById(R.id.lang_list);
             langList.setAdapter(adapter);
@@ -130,7 +126,7 @@ public class LanguageList extends ActionBarActivity {
                 }
 
                 public void fromLangChange(String selectedFromList) {
-                    Intent intent = new Intent(myActivity, MainActivity.class);
+                    Intent intent = new Intent(LanguageList.this, MainActivity.class);
                     intent.putExtra("from_lang", selectedFromList);
                     ArrayList availableLangs = languageMap.get(selectedFromList);
                     if (!availableLangs.contains(toLang))
@@ -143,7 +139,7 @@ public class LanguageList extends ActionBarActivity {
                 public void toLangChange (String selectedFromList) {
                     ArrayList availableLangs = languageMap.get(fromLang);
                     if (availableLangs.contains(selectedFromList)) {
-                        Intent intent = new Intent(myActivity, MainActivity.class);
+                        Intent intent = new Intent(LanguageList.this, MainActivity.class);
                         intent.putExtra("to_lang", selectedFromList);
                         intent.putExtra("from_lang", fromLang);
                         intent.putExtra("action", "lang_changed");
