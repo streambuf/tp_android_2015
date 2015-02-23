@@ -1,5 +1,6 @@
 package com.tech_mail.tp_android_2015;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -38,6 +39,8 @@ public class LanguageList extends ActionBarActivity {
     private String action;
     private String fromLang;
     private String toLang;
+    private static final int REQUEST_CODE_ACTIVITY_FOR_RESULT = 5;
+    private ListView langList;
 
     private List<String> getListFromJSON (JSONArray jArray) throws JSONException {
         List <String> languageList = new ArrayList<>();
@@ -73,7 +76,20 @@ public class LanguageList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
 
-//        TODO ничего из нижепреведенного не обязательно может присутствовать
+        langList = (ListView) findViewById(R.id.lang_list);
+        langList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+                Bundle conData = new Bundle();
+                conData.putString("action", "action");
+                Intent intent = new Intent();
+                intent.putExtras(conData);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+
+//        TODO ничего из нижеприведенного не обязательно может присутствовать
         Intent intent = getIntent();
         action = intent.getStringExtra("action");
         fromLang = intent.getStringExtra("from_lang");
@@ -114,44 +130,10 @@ public class LanguageList extends ActionBarActivity {
                 set.toArray(array);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(myActivity,
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(LanguageList.this,
                     android.R.layout.simple_list_item_1, array);
-            ListView langList = (ListView) findViewById(R.id.lang_list);
+
             langList.setAdapter(adapter);
-            langList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-                    String selectedFromList = (listView.getItemAtPosition(position).toString());
-                    if (action.equals("from_lang_change")) {
-                        fromLangChange(selectedFromList);
-                    } else if (action.equals("to_lang_change")) {
-                        toLangChange(selectedFromList);
-                    }
-                }
-
-                public void fromLangChange(String selectedFromList) {
-                    Intent intent = new Intent(myActivity, MainActivity.class);
-                    intent.putExtra("from_lang", selectedFromList);
-                    ArrayList availableLangs = languageMap.get(selectedFromList);
-                    if (!availableLangs.contains(toLang))
-                        toLang = (String) availableLangs.get(0);
-                    intent.putExtra("to_lang", toLang);
-                    intent.putExtra("action", "lang_changed");
-                    startActivity(intent);
-                }
-
-                public void toLangChange (String selectedFromList) {
-                    ArrayList availableLangs = languageMap.get(fromLang);
-                    if (availableLangs.contains(selectedFromList)) {
-                        Intent intent = new Intent(myActivity, MainActivity.class);
-                        intent.putExtra("to_lang", selectedFromList);
-                        intent.putExtra("from_lang", fromLang);
-                        intent.putExtra("action", "lang_changed");
-                        startActivity(intent);
-                    } else
-                        Toast.makeText(getApplicationContext(), "No translation available for your language combination\nPlease, select another language", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
 
     }
