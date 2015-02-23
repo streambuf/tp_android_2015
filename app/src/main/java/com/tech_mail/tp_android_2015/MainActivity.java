@@ -97,13 +97,12 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 startActivity(
                     languageListIntent(
-                        buttonTo.getText().toString(),
                         buttonFrom.getText().toString(),
+                        buttonTo.getText().toString(),
                         "to_lang_change"
                 ));
             }
         });
-
 
         buttonSwitchLang.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +120,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
-
     }
 
     private Intent languageListIntent(String from, String to, String action) {
