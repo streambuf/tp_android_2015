@@ -8,19 +8,38 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
+import com.tech_mail.tp_android_2015.utils.LanguageListParser;
+import com.tech_mail.tp_android_2015.utils.ProgressBarViewer;
 
 import org.json.JSONObject;
 
 
+import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends FragmentActivity {
+    private final String progressBarMsg = "Downloading Language List";
+    private String API_KEY;
+    private String URL;
+    private Map<String, ArrayList<String>> languageMap = new HashMap<>();
+    private String fromLang = "en";
+    private String toLang = "ru";
+
 
     private DatabaseHelper dbHelper;
 
@@ -29,6 +48,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        API_KEY = getResources().getString(R.string.API_KEY);
+        URL = getResources().getString(R.string.url_lang_list);
         dbHelper = new DatabaseHelper(this, null);
 
         final Button buttonFrom = (Button) findViewById(R.id.from_lang);
@@ -40,13 +61,16 @@ public class MainActivity extends FragmentActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         final TextView textView = (TextView) findViewById(R.id.textView);
 
+        ProgressBarViewer.view(MainActivity.this, progressBarMsg);
+        new DownloadLanguageList().execute(URL + API_KEY);
+
         Intent intent = getIntent();
         String action = intent.getStringExtra("action");
 
         if (action != null) {
             if (action.equals("lang_changed")) {
-                String fromLang = intent.getStringExtra("from_lang");
-                String toLang = intent.getStringExtra("to_lang");
+                fromLang = intent.getStringExtra("from_lang");
+                toLang = intent.getStringExtra("to_lang");
                 buttonFrom.setText(fromLang);
                 buttonTo.setText(toLang);
             }
@@ -56,8 +80,6 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 String requestText = editText.getText().toString();
-                String fromLang = buttonFrom.getText().toString();
-                String toLang = buttonTo.getText().toString();
 
                 if (requestText.length() == 0) {
                     ShowMessage("Field must not be empty");
@@ -83,11 +105,10 @@ public class MainActivity extends FragmentActivity {
         buttonFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(
                     languageListIntent(
-                        buttonFrom.getText().toString(),
-                        buttonTo.getText().toString(),
-                        "from_lang_change"
+                        fromLang, toLang, "from_lang_change"
                 ));
             }
         });
@@ -95,11 +116,10 @@ public class MainActivity extends FragmentActivity {
         buttonTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(
                     languageListIntent(
-                        buttonFrom.getText().toString(),
-                        buttonTo.getText().toString(),
-                        "to_lang_change"
+                        fromLang, toLang, "to_lang_change"
                 ));
             }
         });
@@ -107,9 +127,10 @@ public class MainActivity extends FragmentActivity {
         buttonSwitchLang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fromLang = buttonFrom.getText().toString();
-                buttonFrom.setText(buttonTo.getText().toString());
+                buttonFrom.setText(toLang);
                 buttonTo.setText(fromLang);
+                fromLang = buttonFrom.getText().toString();
+                toLang = buttonTo.getText().toString();
 
                 String requestText = editText.getText().toString();
                 String responseText = textView.getText().toString();
@@ -127,7 +148,35 @@ public class MainActivity extends FragmentActivity {
         intent.putExtra("to_lang", to);
         intent.putExtra("from_lang", from);
         intent.putExtra("action", action);
+        intent.putExtra("map", (java.io.Serializable) languageMap);
         return intent;
+    }
+
+    private class DownloadLanguageList extends AsyncTask<String, Void, String> {
+        public DownloadLanguageList() {}
+
+        protected String doInBackground(String... urls) {
+
+            try {
+                InputStream in = new java.net.URL(urls[0]).openStream();
+                JSONObject json = new JSONObject(streamToString(in));
+                String API_ARRAY_NAME = getResources().getString(R.string.api_langarray_name);
+
+                languageMap = LanguageListParser.parseLanguageList(
+                        LanguageListParser.getListFromJSON(
+                                json.getJSONArray(API_ARRAY_NAME)
+                        )
+                );
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return languageMap.keySet().toString();
+        }
+
+        protected void onPostExecute(String result) {
+            ProgressBarViewer.hide();
+        }
     }
 
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
@@ -211,5 +260,4 @@ public class MainActivity extends FragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }

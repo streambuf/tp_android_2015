@@ -31,7 +31,7 @@ public class LanguageListParser {
                 curLangTo.add(array[1]);
             else {
                 languageMap.put(curLang, curLangTo);
-                curLangTo.clear();
+                curLangTo = new ArrayList<>();
                 curLang = array[0];
                 curLangTo.add(array[1]);
             }

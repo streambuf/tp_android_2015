@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -31,41 +32,26 @@ import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToStr
 import static java.lang.Thread.sleep;
 
 public class LanguageList extends ActionBarActivity {
-    private static final int ORIENTATION_LANDSCAPE = 2;
-    private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
+    private Map <String, ArrayList<String>> languageMap = new HashMap<>();
     private String action;
     private String fromLang;
     private String toLang;
+    private String [] langArray;
     private ListView langList;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String API_KEY = getResources().getString(R.string.API_KEY);
-        String URL = getResources().getString(R.string.url_lang_list);
-        String progressBarMsg = "Downloading Language List";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
 
-        ProgressBarViewer.view(this, progressBarMsg);
-
         Intent intent = getIntent();
-        action = intent.getStringExtra("action");
+        fetchParams(intent);
 
-        if (! (action.equals("from_lang_change") || (action.equals("to_lang_change"))) ) {
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Unexpected action brought you here",
-                    Toast.LENGTH_SHORT
-            ).show();
-//            TODO Error activity
-            startActivity(ReturnLanguageIntent("", "", ""));
-        }
-        else {
-            fromLang = intent.getStringExtra("from_lang");
-            toLang = intent.getStringExtra("to_lang");
-        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(LanguageList.this,
+                android.R.layout.simple_list_item_1, langArray);
 
+        langList = (ListView) findViewById(R.id.lang_list);
+        langList.setAdapter(adapter);
         langList = (ListView) findViewById(R.id.lang_list);
         langList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -94,49 +80,35 @@ public class LanguageList extends ActionBarActivity {
                 }
             }
         });
-
-        new DownloadLanguageList().execute(URL + API_KEY);
     }
 
-    private class DownloadLanguageList extends AsyncTask<String, Void, String> {
-        public DownloadLanguageList() {}
+    public void fetchParams (Intent intent) {
+        action = intent.getStringExtra("action");
 
-        protected String doInBackground(String... urls) {
-            try {
-                InputStream in = new java.net.URL(urls[0]).openStream();
-                JSONObject json = new JSONObject(streamToString(in));
-                String API_ARRAY_NAME = getResources().getString(R.string.api_langarray_name);
-
-                languageMap = LanguageListParser.parseLanguageList(
-                        LanguageListParser.getListFromJSON(
-                                json.getJSONArray(API_ARRAY_NAME)
-                        )
-                );
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return languageMap.keySet().toString();
+        if (! (action.equals("from_lang_change") || (action.equals("to_lang_change"))) ) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Unexpected action brought you here",
+                    Toast.LENGTH_SHORT
+            ).show();
+//            TODO Error activity
+            startActivity(ReturnLanguageIntent("", "", ""));
+        }
+        else {
+            fromLang = intent.getStringExtra("from_lang");
+            toLang = intent.getStringExtra("to_lang");
+            languageMap = (HashMap <String, ArrayList<String>>) intent.getSerializableExtra("map");
         }
 
-        protected void onPostExecute(String result) {
-            String[] array;
-            if (action.equals("to_lang_change")) {
-                ArrayList availableLangs = languageMap.get(fromLang);
-                array = new String[availableLangs.size()];
-                availableLangs.toArray(array);
-            }
-            else {
-                Set<String> set = languageMap.keySet();
-                array = new String[set.size()];
-                set.toArray(array);
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(LanguageList.this,
-                    android.R.layout.simple_list_item_1, array);
-            langList.setAdapter(adapter);
-
-            ProgressBarViewer.hide();
+        if (action.equals("from_lang_change")) {
+            Set<String> set = languageMap.keySet();
+            langArray = new String[set.size()];
+            set.toArray(langArray);
+        }
+        else {
+            ArrayList availableLangs = languageMap.get(fromLang);
+            langArray = new String[availableLangs.size()];
+            availableLangs.toArray(langArray);
         }
     }
 
