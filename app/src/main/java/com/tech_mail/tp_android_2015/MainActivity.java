@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,8 +25,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
 import static java.lang.Thread.sleep;
@@ -219,7 +216,7 @@ public class MainActivity extends FragmentActivity {
         protected void onPostExecute(String result) {
             if (result != null) {
                 if (! text.equals("") &&  ! result.equals("")) {
-                    dbHelper.insert(fromLang, text.trim(), toLang, result);
+                    dbHelper.insertTrans(fromLang, text.trim(), toLang, result);
                 }
                 setTextView(result);
             }

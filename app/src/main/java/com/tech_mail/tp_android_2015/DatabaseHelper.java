@@ -15,11 +15,12 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     public static final String DATABASE_NAME = "app.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String TAG = "DatabaseHelper";
 
     public static final String TRANS_TABLE_NAME = "translations";
@@ -28,6 +29,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final String TRANS_LANG = "trans_lang";
     public static final String TRANS = "trans";
     public static final String TIMESTAMP = "time";
+
+    public static final String LANGS_TABLE_NAME = "langpairs";
+    public static final String LANG_PAIR = "pair";
 
     public DatabaseHelper(Context context, CursorFactory factory) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -41,7 +45,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION, errorHandler);
     }
 
-    private static final String DATABASE_CREATE_SCRIPT = "CREATE TABLE "
+    private static final String DATABASE_CREATE_SCRIPT =
+            "CREATE TABLE "
             + TRANS_TABLE_NAME + " ("
             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + REQUEST_LANG + " TEXT NOT NULL, "
@@ -49,6 +54,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
             + TRANS_LANG + " TEXT NOT NULL, "
             + TRANS + " TEXT NOT NULL, "
             + TIMESTAMP + "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            + ");"
+            + "CREATE TABLE "
+            + LANGS_TABLE_NAME + "("
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + LANG_PAIR + " TEXT NOT NULL"
             + ");";
 
     @Override
@@ -56,8 +66,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         db.execSQL(DATABASE_CREATE_SCRIPT);
     }
 
-    private static final String DATABASE_DROP_SCRIPT = "DROP TABLE IF EXISTS "
-            + TRANS_TABLE_NAME + ";";
+    private static final String DATABASE_DROP_SCRIPT =
+            "DROP TABLE IF EXISTS "
+            + TRANS_TABLE_NAME + ";"
+            + "DROP TABLE IF EXISTS "
+            + LANGS_TABLE_NAME + ";";
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -65,7 +78,21 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         onCreate(db);
     }
 
-    public void insert(String reqLang, String request, String transLang, String trans) {
+    public boolean clearTable(String table) {
+        int doneDelete = 0;
+        try {
+            doneDelete = getWritableDatabase().delete(table, null, null);
+        }
+        catch (SQLiteException e) {
+            Log.e(TAG, table + ": " + e.toString());
+        }
+        Log.w(TAG, table + ": " + Integer.toString(doneDelete));
+        return doneDelete > 0;
+    }
+
+    //---------------------------------------------------------------------------------------------
+
+    public void insertTrans(String reqLang, String request, String transLang, String trans) {
         ContentValues map = new ContentValues();
         map.put(REQUEST_LANG, reqLang);
         map.put(REQUEST, request);
@@ -80,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         }
     }
 
-    public void delete(String request) {
+    public void deleteTrans(String request) {
         String [] whereArgs = new String [] {request};
         try {
             getWritableDatabase().delete(TRANS_TABLE_NAME, REQUEST + "=?", whereArgs);
@@ -90,22 +117,48 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         }
     }
 
-    public boolean deleteAll() {
-        int doneDelete = 0;
+    public boolean deleteHistory() {
+        return clearTable(TRANS_TABLE_NAME);
+    }
+
+    public Cursor fetchHistory() {
+        SQLiteDatabase sdb = getReadableDatabase();
+
+        Cursor cursor = sdb.query(TRANS_TABLE_NAME, new String[]
+                        {BaseColumns._ID, REQUEST_LANG, REQUEST, TRANS_LANG, TRANS},
+                null, null, null, null, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+        return cursor;
+    }
+
+    //---------------------------------------------------------------------------------
+
+    public void setLangPairs(List<String> array) {
+        boolean status = clearTable(LANGS_TABLE_NAME);
+        if (! status)
+            return;
+
         try {
-            doneDelete = getWritableDatabase().delete(TRANS_TABLE_NAME, null, null);
+            SQLiteDatabase db = getWritableDatabase();
+            for (String pair : array) {
+                ContentValues map = new ContentValues();
+                map.put(LANG_PAIR, pair);
+                db.insert(LANGS_TABLE_NAME, null, map);
+            }
         }
         catch (SQLiteException e) {
             Log.e(TAG, e.toString());
         }
-        Log.w(TAG, Integer.toString(doneDelete));
-        return doneDelete > 0;
     }
 
-    public Cursor fetchAll() {
+    public Cursor fetchLangPairs() {
         SQLiteDatabase sdb = getReadableDatabase();
-        Cursor cursor = sdb.query(TRANS_TABLE_NAME, new String[] {BaseColumns._ID,
-                        REQUEST_LANG, REQUEST, TRANS_LANG, TRANS},
+
+        Cursor cursor = sdb.query(LANGS_TABLE_NAME, new String[]
+                        {BaseColumns._ID, LANG_PAIR},
                 null, null, null, null, null);
 
         if (cursor != null) {

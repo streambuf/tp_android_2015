@@ -27,16 +27,16 @@ public class HistoryActivity extends ActionBarActivity {
     }
 
     private void displayListView() {
-        Cursor cursor = dbHelper.fetchAll();
+        Cursor cursor = dbHelper.fetchHistory();
 
         String[] columns = new String[] {
-                DatabaseHelper.REQUEST,
-                DatabaseHelper.TRANS,
+            DatabaseHelper.REQUEST,
+            DatabaseHelper.TRANS,
         };
 
         int[] views = new int[] {
-                R.id.request,
-                R.id.trans,
+            R.id.request,
+            R.id.trans,
         };
 
         adapter = new SimpleCursorAdapter(this, R.layout.history_item, cursor, columns, views, 0);
@@ -47,9 +47,9 @@ public class HistoryActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-                String trans = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.TRANS));
-                Toast.makeText(getApplicationContext(), trans, Toast.LENGTH_SHORT).show();
+            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+            String trans = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.TRANS));
+            Toast.makeText(getApplicationContext(), trans, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -73,7 +73,7 @@ public class HistoryActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.action_clear) {
-            dbHelper.deleteAll();
+            dbHelper.deleteHistory();
             displayListView();
         }
 

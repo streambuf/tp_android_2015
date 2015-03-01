@@ -3,6 +3,7 @@ package com.tech_mail.tp_android_2015;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.tech_mail.tp_android_2015.utils.LanguageListParser;
@@ -39,10 +41,15 @@ public class LanguageList extends ActionBarActivity {
     private String [] langArray;
     private ListView langList;
 
+    private DatabaseHelper dbHelper;
+    private SimpleCursorAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
+
+        dbHelper = new DatabaseHelper(this, null);
 
         Intent intent = getIntent();
         fetchParams(intent);
@@ -118,6 +125,31 @@ public class LanguageList extends ActionBarActivity {
         intent.putExtra("from_lang", from);
         intent.putExtra("action", action);
         return intent;
+    }
+
+    private void displayListView() {
+        Cursor cursor = dbHelper.fetchLangPairs();
+
+        String[] columns = new String[] {
+            DatabaseHelper.LANG_PAIR,
+        };
+
+        int[] views = new int[] {
+            //TODO: set view item id in layout (R.id.lang)
+        };
+
+        //TODO: set layout
+        adapter = new SimpleCursorAdapter(this, R.layout.history_item, cursor, columns, views, 0);
+
+        ListView listView = (ListView) findViewById(R.id.lang_list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+            }
+        });
     }
 
     @Override
