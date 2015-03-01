@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.tech_mail.tp_android_2015.utils.LanguageListParser;
+import com.tech_mail.tp_android_2015.utils.ProgressBarViewer;
 
 import org.json.JSONObject;
 
@@ -36,25 +37,17 @@ public class LanguageList extends ActionBarActivity {
     private String fromLang;
     private String toLang;
     private ListView langList;
-    private ProgressDialog progress;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String API_KEY = getResources().getString(R.string.API_KEY);
         String URL = getResources().getString(R.string.url_lang_list);
-        String progressBar = "Downloading Language List";
+        String progressBarMsg = "Downloading Language List";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
 
-
-
-//        int orient = this.getResources().getConfiguration().orientation;
-
-        progress = new ProgressDialog(this);
-        progress.setMessage(progressBar);
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setIndeterminate(true);
-        progress.show();
+        ProgressBarViewer.view(this, progressBarMsg);
 
         Intent intent = getIntent();
         action = intent.getStringExtra("action");
@@ -143,7 +136,7 @@ public class LanguageList extends ActionBarActivity {
                     android.R.layout.simple_list_item_1, array);
             langList.setAdapter(adapter);
 
-            progress.hide();
+            ProgressBarViewer.hide();
         }
     }
 
