@@ -1,12 +1,9 @@
 package com.tech_mail.tp_android_2015;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
+
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,21 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.tech_mail.tp_android_2015.utils.LanguageListParser;
-import com.tech_mail.tp_android_2015.utils.ProgressBarViewer;
-
-import org.json.JSONObject;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
-import static android.app.PendingIntent.getActivity;
-import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
-import static java.lang.Thread.sleep;
 
 public class LanguageList extends ActionBarActivity {
     private Map <String, ArrayList<String>> languageMap = new HashMap<>();

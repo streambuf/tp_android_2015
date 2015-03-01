@@ -23,7 +23,6 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/switchLang"
                 android:id="@+id/switch_lang"
                 android:background="@drawable/switch_lang"
                 android:layout_weight="1"/>

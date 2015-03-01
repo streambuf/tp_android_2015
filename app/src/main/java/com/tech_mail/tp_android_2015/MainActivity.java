@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,16 +25,11 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
-import static java.lang.Thread.sleep;
+
 
 public class MainActivity extends FragmentActivity {
     private final String progressBarMsg = "Downloading Language List";
-    private String API_KEY;
-    private String URL;
     private Map<String, ArrayList<String>> languageMap = new HashMap<>();
     private String fromLang = "en";
     private String toLang = "ru";
@@ -48,8 +42,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        API_KEY = getResources().getString(R.string.API_KEY);
-        URL = getResources().getString(R.string.url_lang_list);
+        String API_KEY = getResources().getString(R.string.API_KEY);
+        String URL = getResources().getString(R.string.url_lang_list);
         dbHelper = new DatabaseHelper(this, null);
 
         final Button buttonFrom = (Button) findViewById(R.id.from_lang);
@@ -181,9 +175,9 @@ public class MainActivity extends FragmentActivity {
 
     private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
 
-        private String fromLang;
-        private String toLang;
-        private String text;
+        private final String fromLang;
+        private final String toLang;
+        private final String text;
 
         public TranslatedTextGetter(String fromLang, String toLang, String text) {
             this.fromLang = fromLang;
@@ -201,12 +195,12 @@ public class MainActivity extends FragmentActivity {
                 String requestURL = urlTranslate + "&lang=" + fromLang + "-" + toLang + "&text=" + encodedText;
 
                 JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
-                Integer status = (Integer) json.getInt("code");
+                Integer status = json.getInt("code");
                 if (status != 200) {
                     ShowMessage("Can't be translated: ");
                 }
                 else {
-                    translatedText = (String) json.getString("text");
+                    translatedText = json.getString("text");
                     translatedText = translatedText.substring(2, translatedText.length() - 2);
                 }
             } catch (Exception e) {

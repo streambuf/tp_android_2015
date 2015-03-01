@@ -1,6 +1,5 @@
 package com.tech_mail.tp_android_2015.utils;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONObject;

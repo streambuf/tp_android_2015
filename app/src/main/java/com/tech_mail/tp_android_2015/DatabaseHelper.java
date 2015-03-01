@@ -14,7 +14,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import java.sql.SQLException;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
