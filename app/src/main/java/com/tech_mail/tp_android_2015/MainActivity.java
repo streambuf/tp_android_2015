@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import com.tech_mail.tp_android_2015.utils.LanguageListParser;
 import com.tech_mail.tp_android_2015.utils.ProgressBarViewer;
+import com.tech_mail.tp_android_2015.utils.TranslatedTextGetter;
 
 import org.json.JSONObject;
 
@@ -71,7 +72,16 @@ public class MainActivity extends FragmentActivity {
                     ShowMessage("Field must not be empty");
                 }
                 try {
-                    new TranslatedTextGetter(fromLang, toLang, requestText).execute();
+                    String urlTranslate = getResources().getString(R.string.url_translate);
+                    TranslatedTextGetter.create()
+                            .context(MainActivity.this)
+                            .fromLang(fromLang)
+                            .toLang(toLang)
+                            .text(requestText)
+                            .dbHelper(dbHelper)
+                            .textView((TextView) findViewById(R.id.textView))
+                            .urlTranslate(urlTranslate)
+                            .execute();
                 }
                 catch (Exception e) {
                     ShowMessage("Can't be translated");
@@ -93,9 +103,9 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
 
                 startActivityForResult(
-                    languageListIntent(
-                        fromLang, toLang, "from_lang_change"
-                ), REQUEST_CODE_ACTIVITY_LANGUAGE);
+                        languageListIntent(
+                                fromLang, toLang, "from_lang_change"
+                        ), REQUEST_CODE_ACTIVITY_LANGUAGE);
             }
         });
 
@@ -104,9 +114,9 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
 
                 startActivityForResult(
-                    languageListIntent(
-                        fromLang, toLang, "to_lang_change"
-                ), REQUEST_CODE_ACTIVITY_LANGUAGE);
+                        languageListIntent(
+                                fromLang, toLang, "to_lang_change"
+                        ), REQUEST_CODE_ACTIVITY_LANGUAGE);
             }
         });
 
@@ -184,57 +194,6 @@ public class MainActivity extends FragmentActivity {
 
         protected void onPostExecute(String result) {
             ProgressBarViewer.hide();
-        }
-    }
-
-    private class TranslatedTextGetter extends AsyncTask<String, Void, String> {
-
-        private final String fromLang;
-        private final String toLang;
-        private final String text;
-
-        public TranslatedTextGetter(String fromLang, String toLang, String text) {
-            this.fromLang = fromLang;
-            this.toLang = toLang;
-            this.text = text;
-        }
-
-        @Override
-        protected String doInBackground(String ... params) {
-            String urlTranslate = getResources().getString(R.string.url_translate);
-            String translatedText = null;
-
-            try {
-                String encodedText = URLEncoder.encode(text, "UTF-8");
-                String requestURL = urlTranslate + "&lang=" + fromLang + "-" + toLang + "&text=" + encodedText;
-
-                JSONObject json = HttpResponseGetter.getResponseByUrl(requestURL);
-                Integer status = json.getInt("code");
-                if (status != 200) {
-                    ShowMessage("Can't be translated: ");
-                }
-                else {
-                    translatedText = json.getString("text");
-                    translatedText = translatedText.substring(2, translatedText.length() - 2);
-                }
-            } catch (Exception e) {
-                Log.e("MainActivity", e.toString());
-            }
-            return translatedText;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (result != null) {
-                if (! text.equals("") &&  ! result.equals("")) {
-                    dbHelper.insertTrans(fromLang, text.trim(), toLang, result);
-                }
-                setTextView(result);
-            }
-            else {
-                Log.e("MainActivity", "Response is null");
-                ShowMessage("Can't be translated");
-            }
         }
     }
 
