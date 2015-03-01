@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
-
 import java.sql.SQLException;
 import java.util.List;
 
