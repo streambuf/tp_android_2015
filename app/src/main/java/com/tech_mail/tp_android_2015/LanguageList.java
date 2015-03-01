@@ -1,10 +1,8 @@
 package com.tech_mail.tp_android_2015;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,40 +13,49 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tech_mail.tp_android_2015.utils.HttpResponseGetter;
 import com.tech_mail.tp_android_2015.utils.LanguageListParser;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static android.app.PendingIntent.getActivity;
 import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToString;
+import static java.lang.Thread.sleep;
 
 public class LanguageList extends ActionBarActivity {
+    private static final int ORIENTATION_LANDSCAPE = 2;
     private Map <String, ArrayList<String>> languageMap = new TreeMap<>();
     private String action;
     private String fromLang;
     private String toLang;
     private ListView langList;
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String API_KEY = getResources().getString(R.string.API_KEY);
         String URL = getResources().getString(R.string.url_lang_list);
-
+        String progressBar = "Downloading Language List";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
+
+
+
+//        int orient = this.getResources().getConfiguration().orientation;
+
+        progress = new ProgressDialog(this);
+        progress.setMessage(progressBar);
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setIndeterminate(true);
+        progress.show();
+
         Intent intent = getIntent();
         action = intent.getStringExtra("action");
 
@@ -59,7 +66,7 @@ public class LanguageList extends ActionBarActivity {
                     Toast.LENGTH_SHORT
             ).show();
 //            TODO Error activity
-            startActivity(languageListIntent("", "", ""));
+            startActivity(ReturnLanguageIntent("", "", ""));
         }
         else {
             fromLang = intent.getStringExtra("from_lang");
@@ -78,13 +85,13 @@ public class LanguageList extends ActionBarActivity {
                     if (!availableLangs.contains(toLang))
                         toLang = (String) availableLangs.get(0);
 
-                    startActivity(languageListIntent(selectedFromList, toLang, "lang_changed"));
+                    startActivity(ReturnLanguageIntent(selectedFromList, toLang, "lang_changed"));
 
                 } else if (action.equals("to_lang_change")) {
                     ArrayList availableLangs = languageMap.get(fromLang);
 
                     if (availableLangs.contains(selectedFromList))
-                        startActivity(languageListIntent(fromLang, selectedFromList, "lang_changed"));
+                        startActivity(ReturnLanguageIntent(fromLang, selectedFromList, "lang_changed"));
                     else
                         Toast.makeText(
                                 getApplicationContext(),
@@ -135,10 +142,12 @@ public class LanguageList extends ActionBarActivity {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(LanguageList.this,
                     android.R.layout.simple_list_item_1, array);
             langList.setAdapter(adapter);
+
+            progress.hide();
         }
     }
 
-    private Intent languageListIntent(String from, String to, String action) {
+    private Intent ReturnLanguageIntent(String from, String to, String action) {
         Intent intent = new Intent(LanguageList.this, MainActivity.class);
         intent.putExtra("to_lang", to);
         intent.putExtra("from_lang", from);
