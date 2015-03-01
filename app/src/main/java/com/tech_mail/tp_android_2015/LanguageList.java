@@ -3,7 +3,6 @@ package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -58,13 +57,14 @@ public class LanguageList extends ActionBarActivity {
                     if (!availableLangs.contains(toLang))
                         toLang = (String) availableLangs.get(0);
 
-                    startActivity(ReturnLanguageIntent(selectedFromList, toLang, "lang_changed"));
+                    setResult(RESULT_OK, ReturnLanguageIntent(selectedFromList, toLang, "lang_changed"));
 
                 } else if (action.equals("to_lang_change")) {
                     ArrayList availableLangs = languageMap.get(fromLang);
 
                     if (availableLangs.contains(selectedFromList))
-                        startActivity(ReturnLanguageIntent(fromLang, selectedFromList, "lang_changed"));
+                        setResult(RESULT_OK,ReturnLanguageIntent(fromLang, selectedFromList, "lang_changed"));
+
                     else
                         Toast.makeText(
                                 getApplicationContext(),
@@ -72,6 +72,7 @@ public class LanguageList extends ActionBarActivity {
                                 Toast.LENGTH_SHORT
                         ).show();
                 }
+                finish();
             }
         });
     }
@@ -86,7 +87,9 @@ public class LanguageList extends ActionBarActivity {
                     Toast.LENGTH_SHORT
             ).show();
 //            TODO Error activity
-            startActivity(ReturnLanguageIntent("", "", ""));
+            intent = new Intent(this, MainActivity.class);
+            setResult(RESULT_CANCELED, intent);
+            finish();
         }
         else {
             fromLang = intent.getStringExtra("from_lang");

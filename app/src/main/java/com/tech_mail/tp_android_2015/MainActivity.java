@@ -33,7 +33,9 @@ public class MainActivity extends FragmentActivity {
     private Map<String, ArrayList<String>> languageMap = new HashMap<>();
     private String fromLang = "en";
     private String toLang = "ru";
-
+    private static final int REQUEST_CODE_ACTIVITY_LANGUAGE = 150;
+    private Button buttonFrom;
+    private Button buttonTo;
 
     private DatabaseHelper dbHelper;
 
@@ -46,8 +48,8 @@ public class MainActivity extends FragmentActivity {
         String URL = getResources().getString(R.string.url_lang_list);
         dbHelper = new DatabaseHelper(this, null);
 
-        final Button buttonFrom = (Button) findViewById(R.id.from_lang);
-        final Button buttonTo = (Button) findViewById(R.id.to_lang);
+        buttonFrom = (Button) findViewById(R.id.from_lang);
+        buttonTo = (Button) findViewById(R.id.to_lang);
         final Button buttonSwitchLang = (Button) findViewById(R.id.switch_lang);
         final Button buttonToHistory = (Button) findViewById(R.id.to_history);
         final Button buttonTranslate = (Button) findViewById(R.id.translate);
@@ -58,17 +60,7 @@ public class MainActivity extends FragmentActivity {
         ProgressBarViewer.view(MainActivity.this, progressBarMsg);
         new DownloadLanguageList().execute(URL + API_KEY);
 
-        Intent intent = getIntent();
-        String action = intent.getStringExtra("action");
 
-        if (action != null) {
-            if (action.equals("lang_changed")) {
-                fromLang = intent.getStringExtra("from_lang");
-                toLang = intent.getStringExtra("to_lang");
-                buttonFrom.setText(fromLang);
-                buttonTo.setText(toLang);
-            }
-        }
 
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,10 +92,10 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
 
-                startActivity(
+                startActivityForResult(
                     languageListIntent(
                         fromLang, toLang, "from_lang_change"
-                ));
+                ), REQUEST_CODE_ACTIVITY_LANGUAGE);
             }
         });
 
@@ -111,10 +103,10 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
 
-                startActivity(
+                startActivityForResult(
                     languageListIntent(
                         fromLang, toLang, "to_lang_change"
-                ));
+                ), REQUEST_CODE_ACTIVITY_LANGUAGE);
             }
         });
 
@@ -135,6 +127,28 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_ACTIVITY_LANGUAGE:
+                    String action = data.getStringExtra("action");
+                    if (action != null) {
+                        if (action.equals("lang_changed")) {
+                            fromLang = data.getStringExtra("from_lang");
+                            toLang = data.getStringExtra("to_lang");
+                            buttonFrom.setText(fromLang);
+                            buttonTo.setText(toLang);
+                        }
+                    }
+                    break;
+            }
+        } else {
+            ShowMessage("Can't choose language");
+        }
+
     }
 
     private Intent languageListIntent(String from, String to, String action) {
