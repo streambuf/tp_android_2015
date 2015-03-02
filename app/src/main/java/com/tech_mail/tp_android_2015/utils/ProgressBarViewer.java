@@ -18,6 +18,6 @@ public class ProgressBarViewer {
 
     public static void hide () {
         if ((progress != null) && (progress.isShowing()))
-            progress.hide();
+            progress.dismiss();
     }
 }

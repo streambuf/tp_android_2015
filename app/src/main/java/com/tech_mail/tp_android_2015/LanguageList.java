@@ -117,6 +117,7 @@ public class LanguageList extends ActionBarActivity {
         return intent;
     }
 
+//   TODO to main
     private void displayListView() {
         Cursor cursor = dbHelper.fetchLangPairs();
 
