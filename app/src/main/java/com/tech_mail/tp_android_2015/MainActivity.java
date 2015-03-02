@@ -29,11 +29,11 @@ import static com.tech_mail.tp_android_2015.utils.HttpResponseGetter.streamToStr
 
 
 public class MainActivity extends FragmentActivity {
-    private final String progressBarMsg = "Downloading Language List";
+    private static final int REQUEST_CODE_ACTIVITY_LANGUAGE = 150;
+
     private Map<String, ArrayList<String>> languageMap = new HashMap<>();
     private String fromLang = "en";
     private String toLang = "ru";
-    private static final int REQUEST_CODE_ACTIVITY_LANGUAGE = 150;
     private Button buttonFrom;
     private Button buttonTo;
 
@@ -57,10 +57,7 @@ public class MainActivity extends FragmentActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         final TextView textView = (TextView) findViewById(R.id.textView);
 
-        ProgressBarViewer.view(MainActivity.this, progressBarMsg);
         new DownloadLanguageList().execute(URL + API_KEY);
-
-
 
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,10 +158,15 @@ public class MainActivity extends FragmentActivity {
     }
 
     private class DownloadLanguageList extends AsyncTask<String, Void, String> {
+        private static final String progressBarMsg = "Downloading Language List";
+
         public DownloadLanguageList() {}
 
-        protected String doInBackground(String... urls) {
+        protected void onPreExecute() {
+            ProgressBarViewer.view(MainActivity.this, progressBarMsg);
+        }
 
+        protected String doInBackground(String ... urls) {
             try {
                 InputStream in = new java.net.URL(urls[0]).openStream();
                 JSONObject json = new JSONObject(streamToString(in));

@@ -25,17 +25,11 @@ public class LanguageList extends ActionBarActivity {
     private String fromLang;
     private String toLang;
     private String [] langArray;
-    private ListView langList;
-
-    private DatabaseHelper dbHelper;
-    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_list);
-
-        dbHelper = new DatabaseHelper(this, null);
 
         Intent intent = getIntent();
         fetchParams(intent);
@@ -43,7 +37,7 @@ public class LanguageList extends ActionBarActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(LanguageList.this,
                 android.R.layout.simple_list_item_1, langArray);
 
-        langList = (ListView) findViewById(R.id.lang_list);
+        ListView langList = (ListView) findViewById(R.id.lang_list);
         langList.setAdapter(adapter);
         langList = (ListView) findViewById(R.id.lang_list);
         langList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -115,32 +109,6 @@ public class LanguageList extends ActionBarActivity {
         intent.putExtra("from_lang", from);
         intent.putExtra("action", action);
         return intent;
-    }
-
-//   TODO to main
-    private void displayListView() {
-        Cursor cursor = dbHelper.fetchLangPairs();
-
-        String[] columns = new String[] {
-            DatabaseHelper.LANG_PAIR,
-        };
-
-        int[] views = new int[] {
-            //TODO: set view item id in layout (R.id.lang)
-        };
-
-        //TODO: set layout
-        adapter = new SimpleCursorAdapter(this, R.layout.history_item, cursor, columns, views, 0);
-
-        ListView listView = (ListView) findViewById(R.id.lang_list);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-            }
-        });
     }
 
     @Override
