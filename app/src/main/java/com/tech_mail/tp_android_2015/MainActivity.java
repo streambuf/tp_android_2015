@@ -270,4 +270,21 @@ public class MainActivity extends FragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d("res", "1");
+        buttonFrom.setText(savedInstanceState.getString("fromLang"));
+        buttonTo.setText(savedInstanceState.getString("toLang"));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.d("save", "1");
+        savedInstanceState.putString("fromLang", fromLang);
+        savedInstanceState.putString("toLang", toLang);
+    }
+
 }
