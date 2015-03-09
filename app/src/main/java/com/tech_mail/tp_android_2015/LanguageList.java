@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -126,5 +128,29 @@ public class LanguageList extends ActionBarActivity {
         int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //---------------------------------------------------------------------------------------------
+
+    private DatabaseHelper dbHelper;
+    private SimpleCursorAdapter adapter;
+
+    private final static String LANG_SEPARATOR = "-";
+
+    private Set<String> getLangsFromDB() {
+        Cursor cursor = dbHelper.fetchLangPairs();
+        Set<String> result = new HashSet<String>();
+
+        if (cursor != null) {
+            String [] langs;
+
+            while(cursor.moveToNext()) {
+                langs = cursor.getString(1).split(LANG_SEPARATOR, 2);
+                result.add(langs[0]);
+                result.add(langs[1]);
+            }
+            cursor.close();
+        }
+        return result;
     }
 }
