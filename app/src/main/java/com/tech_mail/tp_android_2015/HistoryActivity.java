@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -27,7 +28,15 @@ public class HistoryActivity extends ActionBarActivity {
     }
 
     private void displayListView() {
+        TextView header = (TextView) findViewById(R.id.header);
         Cursor cursor = dbHelper.fetchHistory();
+
+        if (cursor.getCount() == 0) {
+            header.setText("История пуста");
+        }
+        else {
+            header.setText("");
+        }
 
         String[] columns = new String[] {
             DatabaseHelper.REQUEST,
