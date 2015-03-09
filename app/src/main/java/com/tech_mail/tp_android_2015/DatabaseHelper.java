@@ -73,8 +73,20 @@ public class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DATABASE_DROP_SCRIPT);
-        onCreate(db);
+        Log.d(TAG, " onUpgrade database from " + oldVersion + " to " + newVersion + " version ");
+
+        if (oldVersion == 4 && newVersion == 5) {
+            ContentValues cv = new ContentValues();
+            db.beginTransaction();
+
+            try {
+                // describe the migration here
+                // db.execSQL("");
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
     }
 
     public boolean clearTable(String table) {
