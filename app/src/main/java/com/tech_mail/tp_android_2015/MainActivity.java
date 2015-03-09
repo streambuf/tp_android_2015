@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String API_KEY = getResources().getString(R.string.API_KEY);
+        String API_KEY = getResources().getString(R.string.yandex_API);
         String URL = getResources().getString(R.string.url_lang_list);
         dbHelper = new DatabaseHelper(this, null);
 
@@ -262,11 +262,6 @@ public class MainActivity extends FragmentActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
