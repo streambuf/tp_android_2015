@@ -57,7 +57,9 @@ public class MainActivity extends FragmentActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         final TextView textView = (TextView) findViewById(R.id.textView);
 
-        new DownloadLanguageList().execute(URL + API_KEY);
+        restore(savedInstanceState);
+        if (languageMap.isEmpty())
+            new DownloadLanguageList().execute(URL + API_KEY);
 
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,8 +272,17 @@ public class MainActivity extends FragmentActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d("res", "1");
-        buttonFrom.setText(savedInstanceState.getString("fromLang"));
-        buttonTo.setText(savedInstanceState.getString("toLang"));
+        restore(savedInstanceState);
+    }
+
+    public void restore (Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            buttonFrom.setText(savedInstanceState.getString("fromLang"));
+            buttonTo.setText(savedInstanceState.getString("toLang"));
+            fromLang = savedInstanceState.getString("fromLang");
+            toLang = savedInstanceState.getString("toLang");
+            languageMap = (Map<String, ArrayList<String>>) savedInstanceState.getSerializable("languages");
+        }
     }
 
     @Override
@@ -280,6 +291,7 @@ public class MainActivity extends FragmentActivity {
         Log.d("save", "1");
         savedInstanceState.putString("fromLang", fromLang);
         savedInstanceState.putString("toLang", toLang);
+        savedInstanceState.putSerializable("languages", (java.io.Serializable) languageMap);
     }
 
 }
