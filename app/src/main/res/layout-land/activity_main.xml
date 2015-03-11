@@ -20,22 +20,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/fromLang"
                 android:id="@+id/from_lang"
-                android:layout_weight="4" />
+                android:layout_weight="3" />
 
-            <Button
+            <ImageButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text=""
                 android:id="@+id/switch_lang"
-                android:background="@drawable/switch_lang"
-                android:layout_weight="1"/>
+                android:background="@drawable/switch_lang_button"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/toLang"
                 android:id="@+id/to_lang"
-                android:layout_weight="4" />
+                android:layout_weight="3" />
         </LinearLayout>
 
         <View android:id="@+id/fakeView"

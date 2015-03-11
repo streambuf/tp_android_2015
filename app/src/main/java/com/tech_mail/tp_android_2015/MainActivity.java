@@ -1,6 +1,7 @@
 package com.tech_mail.tp_android_2015;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 
         buttonFrom = (Button) findViewById(R.id.from_lang);
         buttonTo = (Button) findViewById(R.id.to_lang);
-        final Button buttonSwitchLang = (Button) findViewById(R.id.switch_lang);
+        final ImageButton buttonSwitchLang = (ImageButton) findViewById(R.id.switch_lang);
         final Button buttonToHistory = (Button) findViewById(R.id.to_history);
         final Button buttonTranslate = (Button) findViewById(R.id.translate);
 
@@ -230,6 +232,7 @@ public class MainActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
+                result = result.replaceAll("\\\\n", "\\\n");
                 if (! text.equals("") &&  ! result.equals("")) {
                     dbHelper.insertTrans(fromLang, text.trim(), toLang, result);
                 }

@@ -9,7 +9,10 @@
         android:id="@+id/editText"
         android:singleLine="false"
         android:background="#ffffff"
-        android:inputType="textAutoComplete"/>
+        android:inputType="textMultiLine"
+        android:gravity="top|left"
+        android:scrollbars="vertical"
+        android:padding="10dp"/>
 
     <Button
         android:layout_width="match_parent"
